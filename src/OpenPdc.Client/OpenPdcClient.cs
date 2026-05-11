@@ -23,7 +23,7 @@ public sealed class OpenPdcClient : IOpenPdcClient
         _httpClient = httpClient;
     }
 
-    public async Task<PdcItemsResponse> GetItemsAsync(
+    private async Task<PdcItemsResponse> GetItemsAsync(
         int page = 1,
         int? limit = null,
         CancellationToken cancellationToken = default)
