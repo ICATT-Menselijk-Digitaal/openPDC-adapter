@@ -1,0 +1,22 @@
+image:
+  repository: ghcr.io/icatt-menselijk-digitaal/openpdc-adapter
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Cron schedule for the sync job
+schedule: ""          # required — cron expression, e.g. "0 2 * * *"
+
+openPdc:
+  baseUrl: ""         # required — e.g. https://openpdc-instance/wp-json/owc/pdc/v1/
+  itemBaseUrl: ""     # required — e.g. https://openpdc-instance/wp-json/owc/pdc/v1/items
+
+openObjects:
+  baseUrl: ""           # required — e.g. http://host:8000
+  token: ""             # required — set via --set or a sealed secret
+  objectTypeUrl: ""     # required — base URL, e.g. http://host/api/v2/objecttypes/<uuid>
+  objectTypeVersion: 1  # required — e.g. 1
+  owmsUrl: ""           # required — e.g. https://openpdc-instance
+  owmsIdentifier: ""    # required — e.g. https://openpdc-instance/org/<owms-id>
+  owmsEndDate: ""       # required — e.g. 2099-12-31T23:59:59Z
+
+resources: {}

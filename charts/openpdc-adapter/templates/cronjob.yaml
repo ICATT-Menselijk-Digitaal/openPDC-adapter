@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "openpdc-adapter.fullname" . }}
+  labels:
+    {{- include "openpdc-adapter.labels" . | nindent 4 }}
+spec:
+  schedule: {{ required ".Values.schedule is required" .Values.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "openpdc-adapter.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: adapter
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
+              env:
+                - name: OpenPdc__BaseUrl
+                  value: {{ .Values.openPdc.baseUrl | quote }}
+                - name: OpenPdc__ItemBaseUrl
+                  value: {{ .Values.openPdc.itemBaseUrl | quote }}
+                - name: OpenObjects__BaseUrl
+                  value: {{ .Values.openObjects.baseUrl | quote }}
+                - name: OpenObjects__Token
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "openpdc-adapter.fullname" . }}
+                      key: OpenObjects__Token
+                - name: OpenObjects__ObjectTypeUrl
+                  value: {{ .Values.openObjects.objectTypeUrl | quote }}
+                - name: OpenObjects__ObjectTypeVersion
+                  value: {{ .Values.openObjects.objectTypeVersion | quote }}
+                - name: OpenObjects__OwmsUrl
+                  value: {{ .Values.openObjects.owmsUrl | quote }}
+                - name: OpenObjects__OwmsIdentifier
+                  value: {{ .Values.openObjects.owmsIdentifier | quote }}
+                - name: OpenObjects__OwmsEndDate
+                  value: {{ .Values.openObjects.owmsEndDate | quote }}
