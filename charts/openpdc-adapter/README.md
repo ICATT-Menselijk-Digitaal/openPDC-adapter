@@ -10,7 +10,7 @@ Syncs items from openPDC to Open Objects (SDG Kennisartikelen)
 |-----|------|---------|-------------|
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/icatt-menselijk-digitaal/openpdc-adapter"` |  |
-| image.tag | string | `"latest"` |  |
+| image.tag | string | `""` |  |
 | openObjects.baseUrl | string | `""` |  |
 | openObjects.objectTypeUrl | string | `""` |  |
 | openObjects.objectTypeVersion | int | `1` |  |
