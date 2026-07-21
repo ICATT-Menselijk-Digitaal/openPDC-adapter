@@ -1,0 +1,52 @@
+publiccodeYmlVersion: 0.5.0
+name: " openPDC-adapter"
+applicationSuite: KISS/ITA
+url: https://github.com/ICATT-Menselijk-Digitaal/openPDC-adapter
+platforms:
+  - web
+categories:
+  - customer-service-and-support
+  - knowledge-management
+organisation:
+  uri: https://github.com/ICATT-Menselijk-Digitaal
+  name: ICATT
+fundedBy:
+  - name: Rheden municipality
+    uri: https://www.rheden.nl/
+developmentStatus: beta
+softwareType: addon
+intendedAudience:
+  countries:
+    - NL
+description:
+  en:
+    localisedName: " openPDC-adapter"
+    shortDescription: Inserts  "Products and Services catalog" (Producten en
+      Diensten Catalogus) items into KISS search (the Open Object register).
+    longDescription: >-
+      openPDC-adapter for retrieving items from a "Products and Services
+      catalog" (Producten en Diensten Catalogus) and syncing them into the Open
+      Object register.
+
+
+      This adapter is a generic standalone application, developed for the
+      municipality Rheden to make their Products and Services catalog directly
+      available in KISS (https://www.kiss-klantcontact.nl/). The openPDC-adapter
+      fetches products from the WordPress REST API and syncs them as SDG
+      Kennisartikelen into Open Objects.
+    documentation: https://github.com/ICATT-Menselijk-Digitaal/openPDC-adapter
+    features:
+      - Makes JSON/HTTPS API calls
+    screenshots:
+      - https://private-user-images.githubusercontent.com/43372165/584692416-3e18edb7-d584-4a8e-88b1-9a87255e104a.jpg?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODA2NTMyNjIsIm5iZiI6MTc4MDY1Mjk2MiwicGF0aCI6Ii80MzM3MjE2NS81ODQ2OTI0MTYtM2UxOGVkYjctZDU4NC00YThlLTg4YjEtOWE4NzI1NWUxMDRhLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA2MDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNjA1VDA5NDkyMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTg1YTQ1OTI5ZjE0MGY3MmUxY2QxMDA0Y2M3YmRiMTQxYjk2NzhiODIxNGQ2M2Q5YjU3YmYwNTQ4NzE0ODE5YmQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmpwZWcifQ.3xy7ZFpo22RsDemOB_GkC83h9UtjgGGDQE4GJ4YZw5M
+legal:
+  license: EUPL-1.2
+maintenance:
+  type: internal
+  contacts:
+    - name: ICATT
+      email: office@icatt.nl
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
