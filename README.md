@@ -5,6 +5,8 @@ This adapter is a generic standalone application, developed for the municipality
 
 The openPDC-adapter fetches products from the WordPress REST API and syncs them as SDG Kennisartikelen into Open Objects.
 
+Next to product, the adapter also fetches Webpages and Publications (including a customly added Internal Memo-note) into the Kennisartikelen. these can be recognized by the prefix in their Kennisbank-title.
+
 <img width="800px" alt="KISS Rheden Context Diagram" src="https://github.com/user-attachments/assets/3e18edb7-d584-4a8e-88b1-9a87255e104a" />
 
 ---
