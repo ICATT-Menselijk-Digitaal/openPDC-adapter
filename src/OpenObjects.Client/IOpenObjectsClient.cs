@@ -13,21 +13,16 @@ public interface IOpenObjectsClient
     /// <param name="request">The object to create.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created object as returned by the API.</returns>
-    Task<ObjectResponse> PostObjectAsync(
-        CreateObjectRequestBody request,
+    Task<ObjectResponse<TData>> PostObjectAsync<TData>(
+        CreateObjectRequestBody<TData> request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Streams all objects of the given type from the OpenObjects API.
     /// </summary>
-    IAsyncEnumerable<ObjectResponse> GetAllObjectsByObjectTypeUrlAsync(
+    IAsyncEnumerable<ObjectResponse<TData>> GetAllObjectsByObjectTypeUrlAsync<TData>(
         string objectTypeUrl,
         CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Replaces the object with the given UUID.
-    /// </summary>
-    Task PutObjectAsync(Guid uuid, CreateObjectRequestBody request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes the object with the given UUID.

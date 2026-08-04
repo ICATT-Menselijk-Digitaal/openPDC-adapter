@@ -1,0 +1,23 @@
+image:
+  repository: ghcr.io/icatt-menselijk-digitaal/smoelenboek-adapter
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Cron schedule for the sync job
+schedule: ""          # required — cron expression, e.g. "0 2 * * *"
+
+entra:
+  tenantId: ""         # required — Microsoft Entra tenant ID
+  clientId: ""         # required — app registration (client) ID
+  clientSecret: ""     # required — app registration client secret, set via --set or a sealed secret
+  usersFilter: ""      # optional — Graph $filter, e.g. endsWith(userPrincipalName,'@example.nl') and not(department eq null). Leaving this empty fetches every user in the tenant, unfiltered.
+
+openObjects:
+  baseUrl: ""                      # required — e.g. http://host:8000
+  token: ""                        # required — set via --set or a sealed secret
+  medewerkerObjectTypeUrl: ""      # required — e.g. http://host/api/v2/objecttypes/<uuid>
+  medewerkerObjectTypeVersion: 1   # required
+  groepObjectTypeUrl: ""        # required — Groep objects are entered manually in OpenObjects; only read, never written
+  groepObjectTypeVersion: 1     # currently unused
+
+resources: {}

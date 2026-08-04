@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "smoelenboek-adapter.fullname" . }}
+  labels:
+    {{- include "smoelenboek-adapter.labels" . | nindent 4 }}
+spec:
+  schedule: {{ required ".Values.schedule is required" .Values.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "smoelenboek-adapter.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: adapter
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
+              env:
+                - name: Entra__TenantId
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "smoelenboek-adapter.fullname" . }}
+                      key: Entra__TenantId
+                - name: Entra__ClientId
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "smoelenboek-adapter.fullname" . }}
+                      key: Entra__ClientId
+                - name: Entra__ClientSecret
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "smoelenboek-adapter.fullname" . }}
+                      key: Entra__ClientSecret
+                - name: Entra__UsersFilter
+                  value: {{ .Values.entra.usersFilter | quote }}
+                - name: OpenObjects__BaseUrl
+                  value: {{ .Values.openObjects.baseUrl | quote }}
+                - name: OpenObjects__Token
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "smoelenboek-adapter.fullname" . }}
+                      key: OpenObjects__Token
+                - name: OpenObjects__MedewerkerObjectTypeUrl
+                  value: {{ .Values.openObjects.medewerkerObjectTypeUrl | quote }}
+                - name: OpenObjects__MedewerkerObjectTypeVersion
+                  value: {{ .Values.openObjects.medewerkerObjectTypeVersion | quote }}
+                - name: OpenObjects__GroepObjectTypeUrl
+                  value: {{ .Values.openObjects.groepObjectTypeUrl | quote }}
+                - name: OpenObjects__GroepObjectTypeVersion
+                  value: {{ .Values.openObjects.groepObjectTypeVersion | quote }}

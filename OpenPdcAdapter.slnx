@@ -1,8 +1,15 @@
 <Solution>
-  <Folder Name="/src/">
-    <Project Path="src/OpenPdc.Client/OpenPdc.Client.csproj" />
+  <Folder Name="/shared/">
     <Project Path="src/OpenObjects.Client/OpenObjects.Client.csproj" />
+  </Folder>
+  <Folder Name="/openpdc/">
+    <Project Path="src/OpenPdc.Client/OpenPdc.Client.csproj" />
     <Project Path="src/OpenPdc.Adapter/OpenPdc.Adapter.csproj" />
     <Project Path="src/OpenPdc.Worker/OpenPdc.Worker.csproj" />
+  </Folder>
+  <Folder Name="/smoelenboek/">
+    <Project Path="src/Entra.Client/Entra.Client.csproj" />
+    <Project Path="src/Smoelenboek.Adapter/Smoelenboek.Adapter.csproj" />
+    <Project Path="src/Smoelenboek.Worker/Smoelenboek.Worker.csproj" />
   </Folder>
 </Solution>

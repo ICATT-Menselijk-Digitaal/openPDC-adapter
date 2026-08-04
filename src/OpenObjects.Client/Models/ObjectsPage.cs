@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace OpenObjects.Client.Models;
 
-public sealed class ObjectsPage
+public sealed class ObjectsPage<TData>
 {
     [JsonPropertyName("count")]
     public int Count { get; init; }
@@ -11,5 +11,5 @@ public sealed class ObjectsPage
     public string? Next { get; init; }
 
     [JsonPropertyName("results")]
-    public IReadOnlyList<ObjectResponse> Results { get; init; } = [];
+    public IReadOnlyList<ObjectResponse<TData>> Results { get; init; } = [];
 }

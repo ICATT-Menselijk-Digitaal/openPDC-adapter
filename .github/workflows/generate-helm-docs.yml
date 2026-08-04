@@ -5,6 +5,8 @@ on:
     paths:
       - "charts/openpdc-adapter/values.yaml"
       - "charts/openpdc-adapter/Chart.yaml"
+      - "charts/smoelenboek-adapter/values.yaml"
+      - "charts/smoelenboek-adapter/Chart.yaml"
 
 permissions:
   contents: write

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: smoelenboek-adapter
+description: Syncs employees from Microsoft Entra ID to Open Objects (Medewerker)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
