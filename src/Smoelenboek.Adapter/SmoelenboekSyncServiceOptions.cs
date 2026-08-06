@@ -6,8 +6,13 @@ public sealed class SmoelenboekSyncServiceOptions
     public int MedewerkerObjectTypeVersion { get; set; } = 1;
 
     /// <summary>
-    /// Departments are managed manually in OpenObjects by Groep object type — only read from here, never written.
+    /// Afdeling objects are managed manually in OpenObjects — only read from here, never written.
     /// </summary>
+    public string AfdelingObjectTypeUrl { get; set; } = string.Empty;
+
+    public int AfdelingObjectTypeVersion { get; set; } = 1;
+
+
     public string GroepObjectTypeUrl { get; set; } = string.Empty;
 
     public int GroepObjectTypeVersion { get; set; } = 1;

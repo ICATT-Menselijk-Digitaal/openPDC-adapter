@@ -12,6 +12,8 @@ public sealed class Medewerker
 
     public string? VolledigeNaam { get; init; }
 
+    public string? Functie { get; init; }
+
     [JsonPropertyName("telefoonnummers")]
     public IReadOnlyList<TelefoonnummerRef>? Telefoonnummers { get; init; }
 
@@ -22,8 +24,7 @@ public sealed class Medewerker
     public required IReadOnlyList<AfdelingRef> Afdelingen { get; init; }
 
     [JsonPropertyName("groepen")]
-    public required IReadOnlyList<GroepenRef> Groepen { get; init; }
-
+    public IReadOnlyList<GroepenRef>? Groepen { get; init; }
 
 }
 

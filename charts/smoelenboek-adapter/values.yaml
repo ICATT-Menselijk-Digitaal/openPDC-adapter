@@ -17,7 +17,9 @@ openObjects:
   token: ""                        # required — set via --set or a sealed secret
   medewerkerObjectTypeUrl: ""      # required — e.g. http://host/api/v2/objecttypes/<uuid>
   medewerkerObjectTypeVersion: 1   # required
-  groepObjectTypeUrl: ""        # required — Groep objects are entered manually in OpenObjects; only read, never written
+  afdelingObjectTypeUrl: ""     # required — Afdeling objects are entered manually in OpenObjects; only read, never written
+  afdelingObjectTypeVersion: 1  # currently unused
+  groepObjectTypeUrl: ""        # optional — Groep objects are entered manually in OpenObjects; only read, never written
   groepObjectTypeVersion: 1     # currently unused
 
 resources: {}

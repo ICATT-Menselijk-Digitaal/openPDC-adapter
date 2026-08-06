@@ -16,6 +16,8 @@ Syncs employees from Microsoft Entra ID to Open Objects (Medewerker)
 | image.repository | string | `"ghcr.io/icatt-menselijk-digitaal/smoelenboek-adapter"` |  |
 | image.tag | string | `""` |  |
 | openObjects.baseUrl | string | `""` |  |
+| openObjects.afdelingObjectTypeUrl | string | `""` |  |
+| openObjects.afdelingObjectTypeVersion | int | `1` |  |
 | openObjects.groepObjectTypeUrl | string | `""` |  |
 | openObjects.groepObjectTypeVersion | int | `1` |  |
 | openObjects.medewerkerObjectTypeUrl | string | `""` |  |

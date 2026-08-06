@@ -17,4 +17,8 @@ public sealed class EntraUser
     public IReadOnlyList<string> BusinessPhones { get; init; } = [];
 
     public string? Department { get; init; }
+
+    public string? JobTitle { get; init; }
+
+    public bool AccountEnabled { get; init; }
 }

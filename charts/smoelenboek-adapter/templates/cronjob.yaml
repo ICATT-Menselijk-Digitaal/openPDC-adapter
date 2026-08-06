@@ -52,6 +52,10 @@ spec:
                   value: {{ .Values.openObjects.medewerkerObjectTypeUrl | quote }}
                 - name: OpenObjects__MedewerkerObjectTypeVersion
                   value: {{ .Values.openObjects.medewerkerObjectTypeVersion | quote }}
+                - name: OpenObjects__AfdelingObjectTypeUrl
+                  value: {{ .Values.openObjects.afdelingObjectTypeUrl | quote }}
+                - name: OpenObjects__AfdelingObjectTypeVersion
+                  value: {{ .Values.openObjects.afdelingObjectTypeVersion | quote }}
                 - name: OpenObjects__GroepObjectTypeUrl
                   value: {{ .Values.openObjects.groepObjectTypeUrl | quote }}
                 - name: OpenObjects__GroepObjectTypeVersion

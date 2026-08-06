@@ -23,22 +23,22 @@ public sealed class SmoelenboekSyncService(
         }
         logger.LogInformation("Fetched {Count} user(s).", users.Count);
 
-        var groepenByNaam = await LoadGroepenByNaamAsync(cancellationToken);
+        var afdelingenByNaam = await LoadAfdelingenByNaamAsync(cancellationToken);
 
-        await SyncMedewerkersAsync(users, groepenByNaam, cancellationToken);
+        await SyncMedewerkersAsync(users, afdelingenByNaam, cancellationToken);
 
         logger.LogInformation("Smoelenboek sync completed.");
     }
 
-    // Groep objects are entered manually in OpenObjects, not synced from Entra — only read here.
-    // The Entra user's Department is matched by name against these Groep objects (see
-    // BuildGroepRefs) to resolve the groepsId that goes on each medewerker's groepen reference.
-    private async Task<Dictionary<string, Groep>> LoadGroepenByNaamAsync(CancellationToken ct)
+    // Afdeling objects are entered manually in OpenObjects, not synced from Entra — only read here.
+    // The Entra user's Department is matched by name against these Afdeling objects (see
+    // BuildAfdelingRefs) to resolve the afdelingId that goes on each medewerker's afdelingen reference.
+    private async Task<Dictionary<string, Afdeling>> LoadAfdelingenByNaamAsync(CancellationToken ct)
     {
-        var result = new Dictionary<string, Groep>(StringComparer.OrdinalIgnoreCase);
+        var result = new Dictionary<string, Afdeling>(StringComparer.OrdinalIgnoreCase);
         try
         {
-            await foreach (var obj in objectsClient.GetAllObjectsByObjectTypeUrlAsync<Groep>(options.GroepObjectTypeUrl, ct))
+            await foreach (var obj in objectsClient.GetAllObjectsByObjectTypeUrlAsync<Afdeling>(options.AfdelingObjectTypeUrl, ct))
             {
                 var data = obj.Record?.Data;
                 if (data is null)
@@ -48,20 +48,20 @@ public sealed class SmoelenboekSyncService(
 
                 if (!result.TryAdd(data.Naam, data))
                 {
-                    logger.LogWarning("Duplicate groep with naam '{Naam}' found; keeping the first match.", data.Naam);
+                    logger.LogWarning("Duplicate afdeling with naam '{Naam}' found; keeping the first match.", data.Naam);
                 }
             }
         }
         catch (HttpRequestException ex)
         {
-            logger.LogError(ex, "Failed to load groepen from OpenObjects.");
+            logger.LogError(ex, "Failed to load afdelingen from OpenObjects.");
         }
         return result;
     }
 
     private async Task SyncMedewerkersAsync(
         List<EntraUser> users,
-        Dictionary<string, Groep> groepenByNaam,
+        Dictionary<string, Afdeling> afdelingenByNaam,
         CancellationToken ct)
     {
         var existingMedewerkers = await LoadExistingMedewerkersByIdentificatieAsync(ct);
@@ -69,6 +69,11 @@ public sealed class SmoelenboekSyncService(
         var syncedMedewerkers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var user in users)
         {
+            if (user.JobTitle != "Shared Mailbox" && !user.AccountEnabled)
+            {
+                continue;
+            }
+
             var identificatie = user.UserPrincipalName;
             syncedMedewerkers.Add(identificatie);
 
@@ -78,7 +83,7 @@ public sealed class SmoelenboekSyncService(
                 : null;
 
 
-            var groepen = BuildGroepRefs(user, groepenByNaam);
+            var afdelingen = BuildAfdelingRefs(user, afdelingenByNaam);
 
             var data = new Medewerker
             {
@@ -88,10 +93,8 @@ public sealed class SmoelenboekSyncService(
                 VolledigeNaam   = user.DisplayName,
                 Telefoonnummers = phones.Count > 0 ? phones : null,
                 Emails          = emails,
-                // Replace this with a reference to a single
-                // manually-created Afdeling meant to contain all the Groepen objects.
-                Afdelingen      = [new AfdelingRef { Afdelingnaam = user.Department ?? string.Empty }],
-                Groepen         = groepen,
+                Afdelingen      = afdelingen,
+                Functie           = user.JobTitle
             };
             var createMedewerkerRequest = BuildCreateMedewerkerRequest(data);
             await UpsertMedewerkerAsync(identificatie, createMedewerkerRequest, existingMedewerkers, ct);
@@ -100,22 +103,22 @@ public sealed class SmoelenboekSyncService(
         await DeleteOrphanMedewerkersAsync(syncedMedewerkers, existingMedewerkers, ct);
     }
 
-    private IReadOnlyList<GroepenRef> BuildGroepRefs(EntraUser user, Dictionary<string, Groep> groepenByNaam)
+    private IReadOnlyList<AfdelingRef> BuildAfdelingRefs(EntraUser user, Dictionary<string, Afdeling> afdelingenByNaam)
     {
         if (user.Department is not { Length: > 0 } department)
         {
             return [];
         }
-        
-        if (groepenByNaam.TryGetValue(department, out var groep))
+
+        if (afdelingenByNaam.TryGetValue(department, out var afdeling))
         {
-            return [new GroepenRef { Groepsnaam = department, GroepsId = groep.Identificatie }];
+            return [new AfdelingRef { Afdelingnaam = department, AfdelingId = afdeling.Identificatie }];
         }
 
         logger.LogWarning(
-            "No groep found in OpenObjects matching name '{Department}' for user '{User}'. Setting with only the name.",
+            "No afdeling found in OpenObjects matching name '{Department}' for user '{User}'. Setting with only the name.",
             department, user.UserPrincipalName);
-        return [new GroepenRef { Groepsnaam = department }];
+        return [new AfdelingRef { Afdelingnaam = department }];
     }
 
     private async Task<Dictionary<string, ObjectResponse<Medewerker>>> LoadExistingMedewerkersByIdentificatieAsync(CancellationToken ct)

@@ -36,7 +36,7 @@ public sealed class EntraClient(
             _httpClient.DefaultRequestHeaders.Add("ConsistencyLevel", "eventual");
         }
         
-        var select = "displayName,userPrincipalName,department,givenName,surname,mail,businessPhones";
+        var select = "displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
         string? nextLink = $"users?$select={select}&$filter={Uri.EscapeDataString(_options.UsersFilter)}&$count=true&$top=999";
 
         while (nextLink != null)
