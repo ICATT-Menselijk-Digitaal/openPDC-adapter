@@ -14,8 +14,8 @@ Each adapter has its own README covering how it works, prerequisites, configurat
 ## Running Open Objects with Docker
 
 Both adapters sync into the same [Open Objects API](https://github.com/maykinmedia/objects-api).
+Download the docker-compose.yaml, but before running the installationscripts do the following steps:
 
-To run Open Objects via `docker-compose`,
 1- Create a `docker/postgres.entrypoint-initdb.d/` directory **in the same directory as your `docker-compose.yml`** and populate it with the DB initialisation scripts from:
 
 > https://github.com/maykinmedia/open-object/tree/master/docker/postgres.entrypoint-initdb.d
@@ -24,6 +24,7 @@ To run Open Objects via `docker-compose`,
 
 > https://github.com/maykinmedia/open-object/tree/master/docker/setup_configuration
 
+Then to run Open Objects via `docker-compose`,
 3- Run docker compose: `docker compose up -d --no-build`
 
 4- For loading demo data, run: `docker compose exec web src/manage.py loaddata demodata`
