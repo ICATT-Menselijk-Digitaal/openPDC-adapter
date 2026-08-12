@@ -27,7 +27,7 @@ Afdeling objects themselves are **not** synced by this adapter — they're expec
 
 
 
-See the main [README](README.md#running-open-objects-with-docker) for instructions on running Open Objects locally via `docker-compose`.
+See the main [README](../../../README.md#running-open-objects-with-docker) for instructions on running Open Objects locally via `docker-compose`.
 
 ## Configuration reference
 

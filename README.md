@@ -6,8 +6,8 @@ This repository contains standalone adapters that sync external data sources int
 
 | Adapter | Description |
 |---|---|
-| [OpenPdc adapter](src/OpenPdc.Worker/README.md) | Syncs a WordPress-based Products and Services catalog (Producten en Diensten Catalogus) into Open Objects as SDG Kennisartikelen |
-| [Smoelenboek adapter](src/Smoelenboek.Worker/README.md) | Syncs employee ("medewerker") data from Microsoft Entra ID into Open Objects as Medewerker objects |
+| [OpenPdc adapter](src/OpenPdc/OpenPdc.Worker/README.md) | Syncs a WordPress-based Products and Services catalog (Producten en Diensten Catalogus) into Open Objects as SDG Kennisartikelen |
+| [Smoelenboek adapter](src/Smoelenboek/Smoelenboek.Worker/README.md) | Syncs employee ("medewerker") data from Microsoft Entra ID into Open Objects as Medewerker objects |
 
 Each adapter has its own README covering how it works, prerequisites, configuration reference, and running instructions.
 

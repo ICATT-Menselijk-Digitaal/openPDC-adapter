@@ -24,7 +24,7 @@ Next to product, the adapter also fetches Webpages and Publications (including a
 | WordPress instance with products | accessible over HTTP, application password configured |
 | [Open Objects API](https://github.com/maykinmedia/objects-api) | running and configured with the 'Kennisartikel' object type |
 
-See the [repository README](../../README.md#running-open-objects-with-docker) for instructions on running Open Objects locally via `docker-compose`.
+See the [repository README](../../../README.md#running-open-objects-with-docker) for instructions on running Open Objects locally via `docker-compose`.
 
 ## Configuration reference
 
@@ -58,5 +58,5 @@ The following fields in the mapped OpenObjects Kennisartikelen type are hardcode
 From the repository root:
 
 ```bash
-dotnet run --project src/OpenPdc.Worker/OpenPdc.Worker.csproj
+dotnet run --project src/OpenPdc/OpenPdc.Worker/OpenPdc.Worker.csproj
 ```
