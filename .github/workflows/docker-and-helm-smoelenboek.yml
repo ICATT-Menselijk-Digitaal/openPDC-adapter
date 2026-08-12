@@ -114,7 +114,6 @@ jobs:
             --set openObjects.baseUrl="https://example.com" \
             --set openObjects.token="dummy" \
             --set openObjects.medewerkerObjectTypeUrl="https://example.com" \
-            --set openObjects.groepObjectTypeUrl="https://example.com" \
 
       - name: Update chart values with new image tag
         if: ${{ fromJson(env.SHOULD_RELEASE) }}

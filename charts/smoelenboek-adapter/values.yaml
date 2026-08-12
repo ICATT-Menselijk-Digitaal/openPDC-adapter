@@ -19,7 +19,5 @@ openObjects:
   medewerkerObjectTypeVersion: 1   # required
   afdelingObjectTypeUrl: ""     # required — Afdeling objects are entered manually in OpenObjects; only read, never written
   afdelingObjectTypeVersion: 1  # currently unused
-  groepObjectTypeUrl: ""        # optional — Groep objects are entered manually in OpenObjects; only read, never written
-  groepObjectTypeVersion: 1     # currently unused
 
 resources: {}

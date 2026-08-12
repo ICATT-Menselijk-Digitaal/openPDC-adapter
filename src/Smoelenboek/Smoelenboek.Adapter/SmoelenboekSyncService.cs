@@ -23,7 +23,7 @@ public sealed class SmoelenboekSyncService(
         }
         logger.LogInformation("Fetched {Count} user(s).", users.Count);
 
-        var afdelingenByNaam = await LoadAfdelingenByNaamAsync(cancellationToken);
+        var afdelingenByNaam = await LoadAfdelingenAsync(cancellationToken);
 
         await SyncMedewerkersAsync(users, afdelingenByNaam, cancellationToken);
 
@@ -33,7 +33,7 @@ public sealed class SmoelenboekSyncService(
     // Afdeling objects are entered manually in OpenObjects, not synced from Entra — only read here.
     // The Entra user's Department is matched by name against these Afdeling objects (see
     // BuildAfdelingRefs) to resolve the afdelingId that goes on each medewerker's afdelingen reference.
-    private async Task<Dictionary<string, Afdeling>> LoadAfdelingenByNaamAsync(CancellationToken ct)
+    private async Task<Dictionary<string, Afdeling>> LoadAfdelingenAsync(CancellationToken ct)
     {
         var result = new Dictionary<string, Afdeling>(StringComparer.OrdinalIgnoreCase);
         try

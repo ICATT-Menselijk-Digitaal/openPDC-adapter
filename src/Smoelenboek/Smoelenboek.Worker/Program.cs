@@ -40,8 +40,6 @@ services.AddSmoelenboekSyncService(o =>
     o.MedewerkerObjectTypeVersion = int.Parse(config["OpenObjects:MedewerkerObjectTypeVersion"] ?? "1");
     o.AfdelingObjectTypeUrl    = Require(config, "OpenObjects:AfdelingObjectTypeUrl");
     o.AfdelingObjectTypeVersion = int.Parse(config["OpenObjects:AfdelingObjectTypeVersion"] ?? "1");
-    o.GroepObjectTypeUrl       = config["OpenObjects:GroepObjectTypeUrl"] ?? string.Empty;
-    o.GroepObjectTypeVersion   = int.Parse(config["OpenObjects:GroepObjectTypeVersion"] ?? "1");
 });
 
 await using var provider = services.BuildServiceProvider();

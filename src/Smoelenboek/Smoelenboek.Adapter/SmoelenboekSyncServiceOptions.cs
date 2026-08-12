@@ -12,8 +12,4 @@ public sealed class SmoelenboekSyncServiceOptions
 
     public int AfdelingObjectTypeVersion { get; set; } = 1;
 
-
-    public string GroepObjectTypeUrl { get; set; } = string.Empty;
-
-    public int GroepObjectTypeVersion { get; set; } = 1;
 }

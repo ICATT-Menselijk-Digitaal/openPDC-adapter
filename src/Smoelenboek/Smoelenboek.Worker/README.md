@@ -51,6 +51,6 @@ All values can be set as environment variables, or user secrets, or in `appsetti
 ## Running
 
 ```bash
-dotnet run --project src/Smoelenboek.Worker/Smoelenboek.Worker.csproj
+dotnet run --project src/Smoelenboek/Smoelenboek.Worker/Smoelenboek.Worker.csproj
 ```
 or run it from Visual Studio with Smoelenboek.Worker as startupproject

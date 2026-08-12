@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OpenPdc.Client\OpenPdc.Client.csproj" />
-    <ProjectReference Include="..\OpenObjects.Client\OpenObjects.Client.csproj" />
+    <ProjectReference Include="..\..\Shared\OpenObjects.Client\OpenObjects.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

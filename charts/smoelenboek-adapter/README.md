@@ -18,8 +18,6 @@ Syncs employees from Microsoft Entra ID to Open Objects (Medewerker)
 | openObjects.afdelingObjectTypeUrl | string | `""` |  |
 | openObjects.afdelingObjectTypeVersion | int | `1` |  |
 | openObjects.baseUrl | string | `""` |  |
-| openObjects.groepObjectTypeUrl | string | `""` |  |
-| openObjects.groepObjectTypeVersion | int | `1` |  |
 | openObjects.medewerkerObjectTypeUrl | string | `""` |  |
 | openObjects.medewerkerObjectTypeVersion | int | `1` |  |
 | openObjects.token | string | `""` |  |
