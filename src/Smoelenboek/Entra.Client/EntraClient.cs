@@ -21,11 +21,9 @@ public sealed class EntraClient(
     private DateTimeOffset _tokenExpiry = DateTimeOffset.MinValue;
     private readonly SemaphoreSlim _tokenLock = new(1, 1);
 
-    // Fetches users matching the configured EntraClientOptions.UsersFilter (customer-specific — e.g.
-    // restricting to a domain and requiring a department), selecting just the name/contact/department
-    // fields the Medewerker sync needs. UsersFilter is optional: Graph treats an empty $filter as no
-    // filter at all, so leaving it unset fetches every user in the tenant, unfiltered.
-    public async IAsyncEnumerable<EntraUser> GetAllUsersAsync(
+    // Generic OData-paged GET, reusable for any Graph resource/request URI
+    public async IAsyncEnumerable<T> GetAllAsync<T>(
+        string requestUri,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         await SetBearerTokenAsync(cancellationToken).ConfigureAwait(false);
@@ -35,15 +33,13 @@ public sealed class EntraClient(
         {
             _httpClient.DefaultRequestHeaders.Add("ConsistencyLevel", "eventual");
         }
-        
-        var select = "displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
-        string? nextLink = $"users?$select={select}&$filter={Uri.EscapeDataString(_options.UsersFilter)}&$count=true&$top=999";
 
+        string? nextLink = requestUri;
         while (nextLink != null)
         {
-            var page = await FetchPageAsync<EntraUser>(nextLink, cancellationToken).ConfigureAwait(false);
-            foreach (var user in page.Value)
-                yield return user;
+            var page = await FetchPageAsync<T>(nextLink, cancellationToken).ConfigureAwait(false);
+            foreach (var item in page.Value)
+                yield return item;
             nextLink = page.NextLink;
         }
     }

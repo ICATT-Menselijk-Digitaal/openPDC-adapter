@@ -10,14 +10,23 @@ namespace Smoelenboek.Adapter;
 public sealed class SmoelenboekSyncService(
     IEntraClient entraClient,
     IOpenObjectsClient objectsClient,
+    EntraClientOptions entraOptions,
     SmoelenboekSyncServiceOptions options,
     ILogger<SmoelenboekSyncService> logger) : ISmoelenboekSyncService
 {
+    // Selects fields the Medewerker sync needs. UsersFilter is
+    // customer-specific (e.g. restricting to a domain and requiring a department) and optional: Graph
+    // treats an empty $filter as no filter at all, so leaving it unset fetches every user.
+    private const string UsersSelect =
+        "displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
+
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching users from Entra...");
+        var usersRequestUri =
+            $"users?$select={UsersSelect}&$filter={Uri.EscapeDataString(entraOptions.UsersFilter)}&$count=true&$top=999";
         var users = new List<EntraUser>();
-        await foreach (var user in entraClient.GetAllUsersAsync(cancellationToken))
+        await foreach (var user in entraClient.GetAllAsync<EntraUser>(usersRequestUri, cancellationToken))
         {
             users.Add(user);
         }
