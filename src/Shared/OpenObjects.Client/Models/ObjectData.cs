@@ -19,10 +19,14 @@ public sealed class ObjectData
     [JsonPropertyName("productAanwezig")]
     public bool? ProductAanwezig { get; init; }
 
+    // Schema types these as "null" and lists them as required: the key must be present
+    // with a literal JSON null, not omitted — override the client's omit-null default.
     [JsonPropertyName("productValtOnder")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public object? ProductValtOnder { get; init; } = null;
 
     [JsonPropertyName("locaties")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public object? Locaties { get; init; } = null;
 
     [JsonPropertyName("verantwoordelijkeOrganisatie")]

@@ -44,6 +44,23 @@ public sealed class EntraClient(
         }
     }
 
+    public async Task<T?> GetAsync<T>(string requestUri, CancellationToken cancellationToken = default)
+    {
+        await SetBearerTokenAsync(cancellationToken).ConfigureAwait(false);
+
+        using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            throw new HttpRequestException(
+                $"GET {requestUri} failed with {(int)response.StatusCode} ({response.ReasonPhrase}).\nResponse body:\n{body}");
+        }
+
+        return await response.Content
+            .ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     private async Task<ODataPage<T>> FetchPageAsync<T>(string requestUri, CancellationToken ct)
     {
         using var response = await _httpClient.GetAsync(requestUri, ct).ConfigureAwait(false);
