@@ -26,6 +26,9 @@ public sealed class Medewerker
     [JsonPropertyName("groepen")]
     public IReadOnlyList<GroepenRef>? Groepen { get; init; }
 
+    [JsonPropertyName("skills")]
+    public string? Skills { get; init; }
+
 }
 
 public sealed class TelefoonnummerRef

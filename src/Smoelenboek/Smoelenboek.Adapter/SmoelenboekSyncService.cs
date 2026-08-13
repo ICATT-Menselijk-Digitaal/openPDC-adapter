@@ -93,6 +93,7 @@ public sealed class SmoelenboekSyncService(
 
 
             var afdelingen = BuildAfdelingRefs(user, afdelingenByNaam);
+            var skills = await FetchSkillsAsync(user.UserPrincipalName, ct);
 
             var data = new Medewerker
             {
@@ -103,7 +104,8 @@ public sealed class SmoelenboekSyncService(
                 Telefoonnummers = phones.Count > 0 ? phones : null,
                 Emails          = emails,
                 Afdelingen      = afdelingen,
-                Functie           = user.JobTitle
+                Functie           = user.JobTitle,
+                Skills          = skills
             };
             var createMedewerkerRequest = BuildCreateMedewerkerRequest(data);
             await UpsertMedewerkerAsync(identificatie, createMedewerkerRequest, existingMedewerkers, ct);
@@ -128,6 +130,22 @@ public sealed class SmoelenboekSyncService(
             "No afdeling found in OpenObjects matching name '{Department}' for user '{User}'. Setting with only the name.",
             department, user.UserPrincipalName);
         return [new AfdelingRef { Afdelingnaam = department }];
+    }
+
+    private async Task<string?> FetchSkillsAsync(string userPrincipalName, CancellationToken ct)
+    {
+        var requestUri = $"users/{Uri.EscapeDataString(userPrincipalName)}?$select=skills";
+        try
+        {
+            var result = await entraClient.GetAsync<EntraUserSkills>(requestUri, ct);
+            var skills = result?.Skills ?? [];
+            return skills.Count > 0 ? string.Join(", ", skills) : null;
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Failed to fetch skills for user '{User}'.", userPrincipalName);
+            return null;
+        }
     }
 
     private async Task<Dictionary<string, ObjectResponse<Medewerker>>> LoadExistingMedewerkersByIdentificatieAsync(CancellationToken ct)
