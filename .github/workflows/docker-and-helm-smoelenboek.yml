@@ -1,4 +1,4 @@
-name: Build & Release openPDC Adapter
+name: Build & Release Smoelenboek Adapter
 
 on:
   push:
@@ -10,12 +10,12 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE: ghcr.io/${{ github.repository_owner }}/openpdc-adapter
+  IMAGE: ghcr.io/${{ github.repository_owner }}/smoelenboek-adapter
   CHART_URL: ghcr.io/${{ github.repository_owner }}
   SHOULD_PUSH: ${{ github.event_name != 'pull_request' }}
   SHOULD_RELEASE: ${{ startsWith(github.ref, 'refs/tags/v') }}
   IS_LATEST: false
-  CHART_NAME: openpdc-adapter
+  CHART_NAME: smoelenboek-adapter
   VERSION: ""
   REVISION: ""
 
@@ -82,7 +82,7 @@ jobs:
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
           context: .
-          file: src/OpenPdc/OpenPdc.Worker/Dockerfile
+          file: src/Smoelenboek/Smoelenboek.Worker/Dockerfile
           platforms: linux/amd64
           push: ${{ fromJSON(env.SHOULD_PUSH) }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -107,12 +107,13 @@ jobs:
         run: |
           helm template . --debug \
             --set schedule="0 * * * *" \
-            --set openPdc.baseUrl="https://example.com" \
-            --set openPdc.username="dummy" \
-            --set openPdc.password="dummy" \
+            --set entra.tenantId="dummy" \
+            --set entra.clientId="dummy" \
+            --set entra.clientSecret="dummy" \
+            --set entra.usersFilter="dummy" \
             --set openObjects.baseUrl="https://example.com" \
             --set openObjects.token="dummy" \
-            --set openObjects.objectTypeUrl="https://example.com" \
+            --set openObjects.medewerkerObjectTypeUrl="https://example.com" \
 
       - name: Update chart values with new image tag
         if: ${{ fromJson(env.SHOULD_RELEASE) }}
@@ -131,4 +132,3 @@ jobs:
           helm package ./${{ env.CHART_NAME }}
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.CHART_URL }} --username ${{ github.actor }} --password-stdin
           helm push ${{ env.CHART_NAME }}-${{ env.VERSION }}.tgz oci://$CHART_URL_LOWERCASE/charts
-

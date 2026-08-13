@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using OpenObjects.Client.Models;
 
@@ -8,11 +9,15 @@ namespace OpenObjects.Client;
 
 public sealed class OpenObjectsClient : IOpenObjectsClient
 {
+    // OpenObjects object type schemas declare optional fields with a non-nullable type (e.g. "string", not
+    // ["string","null"]) — a present-but-null value still fails their JSON Schema validation, so null fields
+    // must be omitted entirely rather than serialized as `null`.
     internal static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
     private readonly HttpClient _httpClient;
@@ -25,8 +30,8 @@ public sealed class OpenObjectsClient : IOpenObjectsClient
         _logger = logger;
     }
 
-    public async Task<ObjectResponse> PostObjectAsync(
-        CreateObjectRequestBody request,
+    public async Task<ObjectResponse<TData>> PostObjectAsync<TData>(
+        CreateObjectRequestBody<TData> request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -49,13 +54,13 @@ public sealed class OpenObjectsClient : IOpenObjectsClient
         }
 
         var result = await response.Content
-            .ReadFromJsonAsync<ObjectResponse>(JsonOptions, cancellationToken)
+            .ReadFromJsonAsync<ObjectResponse<TData>>(JsonOptions, cancellationToken)
             .ConfigureAwait(false);
 
         return result ?? throw new InvalidOperationException("OpenObjects API returned an empty response.");
     }
 
-    public async IAsyncEnumerable<ObjectResponse> GetAllObjectsByObjectTypeUrlAsync(
+    public async IAsyncEnumerable<ObjectResponse<TData>> GetAllObjectsByObjectTypeUrlAsync<TData>(
         string objectTypeUrl,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -81,7 +86,7 @@ public sealed class OpenObjectsClient : IOpenObjectsClient
             }
 
             var page = await httpResponse.Content
-                .ReadFromJsonAsync<ObjectsPage>(JsonOptions, cancellationToken)
+                .ReadFromJsonAsync<ObjectsPage<TData>>(JsonOptions, cancellationToken)
                 .ConfigureAwait(false);
 
             if (page == null) yield break;
@@ -92,28 +97,6 @@ public sealed class OpenObjectsClient : IOpenObjectsClient
             requestUri = page.Next is { Length: > 0 } next
                 ? new Uri(next)
                 : null;
-        }
-    }
-
-    public async Task PutObjectAsync(Guid uuid, CreateObjectRequestBody request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        var body = JsonSerializer.Serialize(request, JsonOptions);
-        using var message = new HttpRequestMessage(HttpMethod.Put, $"api/v2/objects/{uuid}")
-        {
-            Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json"),
-        };
-
-        var response = await _httpClient
-            .SendAsync(message, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            throw new HttpRequestException(
-                $"PUT api/v2/objects/{uuid} failed with {(int)response.StatusCode} ({response.ReasonPhrase}).\nResponse body:\n{errorBody}");
         }
     }
 

@@ -21,7 +21,7 @@ public sealed class OpenPdcToOpenObjectsSyncService(
         List<PdcRequest> allPdcItems = [.. products, .. pages, .. publications];
         logger.LogInformation("Collected {Count} PDC item(s) in total.", allPdcItems.Count);
 
-        Dictionary<long, ObjectResponse> existingByItemId;
+        Dictionary<long, ObjectResponse<ObjectData>> existingByItemId;
         try
         {
             existingByItemId = await BuildExistingLookupAsync(cancellationToken);
@@ -46,10 +46,10 @@ public sealed class OpenPdcToOpenObjectsSyncService(
     }
 
     // Fetches all existing OpenObjects records, deletes any duplicates, and returns a lookup by PDC item id.
-    private async Task<Dictionary<long, ObjectResponse>> BuildExistingLookupAsync(CancellationToken cancellationToken)
+    private async Task<Dictionary<long, ObjectResponse<ObjectData>>> BuildExistingLookupAsync(CancellationToken cancellationToken)
     {
-        var objectsByItemId = new Dictionary<long, List<ObjectResponse>>();
-        await foreach (var obj in objectsClient.GetAllObjectsByObjectTypeUrlAsync(options.ObjectTypeUrl, cancellationToken))
+        var objectsByItemId = new Dictionary<long, List<ObjectResponse<ObjectData>>>();
+        await foreach (var obj in objectsClient.GetAllObjectsByObjectTypeUrlAsync<ObjectData>(options.ObjectTypeUrl, cancellationToken))
         {
             var dataUrl = obj.Record?.Data?.Url;
             if (dataUrl is null)
@@ -64,7 +64,7 @@ public sealed class OpenPdcToOpenObjectsSyncService(
             list.Add(obj);
         }
 
-        var existingByItemId = new Dictionary<long, ObjectResponse>();
+        var existingByItemId = new Dictionary<long, ObjectResponse<ObjectData>>();
         foreach (var (itemId, objects) in objectsByItemId)
         {
             existingByItemId[itemId] = objects[0];
@@ -87,7 +87,7 @@ public sealed class OpenPdcToOpenObjectsSyncService(
 
     private async Task<int> UpsertItemsAsync(
         IReadOnlyList<PdcRequest> requests,
-        Dictionary<long, ObjectResponse> existingByItemId,
+        Dictionary<long, ObjectResponse<ObjectData>> existingByItemId,
         CancellationToken cancellationToken)
     {
         var processedCount = 0;
@@ -110,7 +110,7 @@ public sealed class OpenPdcToOpenObjectsSyncService(
 
     private async Task<int> DeleteOrphansAsync(
         IReadOnlyList<PdcRequest> requests,
-        Dictionary<long, ObjectResponse> existingByItemId,
+        Dictionary<long, ObjectResponse<ObjectData>> existingByItemId,
         CancellationToken cancellationToken)
     {
         var pdcIds = requests.Select(r => r.ItemId).ToHashSet();
@@ -131,11 +131,11 @@ public sealed class OpenPdcToOpenObjectsSyncService(
         return deletedCount;
     }
 
-    private CreateObjectRequestBody MapToRequest(PdcItem item, string contentType) =>
+    private CreateObjectRequestBody<ObjectData> MapToRequest(PdcItem item, string contentType) =>
         new()
         {
             Type = $"{options.ObjectTypeUrl}",
-            Record = new ObjectRecord
+            Record = new ObjectRecord<ObjectData>
             {
                 TypeVersion = options.ObjectTypeVersion,
                 StartAt     = DateOnly.FromDateTime(DateTime.UtcNow),
@@ -184,5 +184,5 @@ public sealed class OpenPdcToOpenObjectsSyncService(
             : $"{tekst}<hr><a href='{link}' target='_blank'>Bron</a>";
     }
 
-    private readonly record struct PdcRequest(long ItemId, CreateObjectRequestBody Request);
+    private readonly record struct PdcRequest(long ItemId, CreateObjectRequestBody<ObjectData> Request);
 }

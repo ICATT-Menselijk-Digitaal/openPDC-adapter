@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace OpenObjects.Client.Models;
 
-public sealed class ObjectRecord
+public sealed class ObjectRecord<TData>
 {
     [JsonPropertyName("typeVersion")]
     public int TypeVersion { get; init; }
@@ -11,5 +11,5 @@ public sealed class ObjectRecord
     public DateOnly StartAt { get; init; }
 
     [JsonPropertyName("data")]
-    public required ObjectData Data { get; init; }
+    public required TData Data { get; init; }
 }
