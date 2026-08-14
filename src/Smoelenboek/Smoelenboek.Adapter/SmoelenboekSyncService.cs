@@ -75,10 +75,15 @@ public sealed class SmoelenboekSyncService(
     {
         var existingMedewerkers = await LoadExistingMedewerkersByIdentificatieAsync(ct);
 
+        logger.LogWarning(
+            "Existing medewerkers in OpenObjects: {Count}. Total users in Entra (including disabled which will not be synced): {Count}.",
+            existingMedewerkers.Count, users.Count);
+
         var syncedMedewerkers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var user in users)
         {
-            if (user.JobTitle != "Shared Mailbox" && !user.AccountEnabled)
+            var isSharedMailbox = user.JobTitle == "Shared Mailbox";
+            if (!isSharedMailbox && !user.AccountEnabled)
             {
                 continue;
             }
@@ -98,13 +103,13 @@ public sealed class SmoelenboekSyncService(
             var data = new Medewerker
             {
                 Identificatie   = identificatie,
-                Voornaam        = user.GivenName,
-                Achternaam      = user.Surname,
+                Voornaam        = isSharedMailbox ? user.DisplayName : user.GivenName,
+                Achternaam      = isSharedMailbox ? "Shared mailbox" : user.Surname,
                 VolledigeNaam   = user.DisplayName,
                 Telefoonnummers = phones.Count > 0 ? phones : null,
                 Emails          = emails,
                 Afdelingen      = afdelingen,
-                Functie           = user.JobTitle,
+                Functie         = user.JobTitle,
                 Skills          = skills
             };
             var createMedewerkerRequest = BuildCreateMedewerkerRequest(data);
@@ -163,7 +168,15 @@ public sealed class SmoelenboekSyncService(
 
                 if (!result.TryAdd(id, obj))
                 {
-                    logger.LogWarning("Duplicate medewerker with identificatie '{Id}' found; skipping {Uuid}.", id, obj.Uuid);
+                    logger.LogWarning("Duplicate medewerker with identificatie '{Id}' found; deleting {Uuid}.", id, obj.Uuid);
+                    try
+                    {
+                        await objectsClient.DeleteObjectAsync(obj.Uuid, ct);
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        logger.LogError(ex, "Failed to delete duplicate medewerker {Uuid} (identificatie '{Id}').", obj.Uuid, id);
+                    }
                 }
             }
         }
