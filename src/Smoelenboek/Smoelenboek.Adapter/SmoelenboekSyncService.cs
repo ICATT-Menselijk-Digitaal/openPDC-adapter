@@ -87,6 +87,14 @@ public sealed class SmoelenboekSyncService(
             {
                 continue;
             }
+            var afdelingen = BuildAfdelingRefs(user, afdelingenByNaam);
+            if (afdelingen.Count == 0)
+            {
+                logger.LogWarning(
+                    "User '{User}' has no matching afdeling; skipping. Department: '{Department}'.",
+                    user.UserPrincipalName, user.Department);
+                continue;
+            }
 
             var identificatie = user.UserPrincipalName;
             syncedMedewerkers.Add(identificatie);
@@ -96,8 +104,6 @@ public sealed class SmoelenboekSyncService(
                 ? (IReadOnlyList<EmailRef>)[new EmailRef { Email = user.Mail, Naam = user.DisplayName }]
                 : null;
 
-
-            var afdelingen = BuildAfdelingRefs(user, afdelingenByNaam);
             var skills = await FetchSkillsAsync(user.UserPrincipalName, ct);
 
             var data = new Medewerker
@@ -119,22 +125,14 @@ public sealed class SmoelenboekSyncService(
         await DeleteOrphanMedewerkersAsync(syncedMedewerkers, existingMedewerkers, ct);
     }
 
-    private IReadOnlyList<AfdelingRef> BuildAfdelingRefs(EntraUser user, Dictionary<string, Afdeling> afdelingenByNaam)
+    private static IReadOnlyList<AfdelingRef> BuildAfdelingRefs(EntraUser user, Dictionary<string, Afdeling> afdelingenByNaam)
     {
-        if (user.Department is not { Length: > 0 } department)
-        {
-            return [];
-        }
-
-        if (afdelingenByNaam.TryGetValue(department, out var afdeling))
+        if (user.Department is { Length: > 0 } department && afdelingenByNaam.TryGetValue(department, out var afdeling))
         {
             return [new AfdelingRef { Afdelingnaam = department, AfdelingId = afdeling.Identificatie }];
         }
 
-        logger.LogWarning(
-            "No afdeling found in OpenObjects matching name '{Department}' for user '{User}'. Setting with only the name.",
-            department, user.UserPrincipalName);
-        return [new AfdelingRef { Afdelingnaam = department }];
+        return [];
     }
 
     private async Task<string?> FetchSkillsAsync(string userPrincipalName, CancellationToken ct)
