@@ -110,7 +110,7 @@ public sealed class SmoelenboekSyncService(
             {
                 Identificatie   = identificatie,
                 Voornaam        = isSharedMailbox ? user.DisplayName : user.GivenName,
-                Achternaam      = isSharedMailbox ? "Shared mailbox" : user.Surname,
+                Achternaam      = isSharedMailbox ? "(Shared mailbox)" : user.Surname,
                 VolledigeNaam   = user.DisplayName,
                 Telefoonnummers = phones.Count > 0 ? phones : null,
                 Emails          = emails,
