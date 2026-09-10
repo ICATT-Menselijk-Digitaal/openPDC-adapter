@@ -4,6 +4,8 @@ namespace Entra.Client.Models;
 
 public sealed class EntraUser
 {
+    public string Id { get; init; } = string.Empty;
+
     public string UserPrincipalName { get; init; } = string.Empty;
 
     public string? DisplayName { get; init; }

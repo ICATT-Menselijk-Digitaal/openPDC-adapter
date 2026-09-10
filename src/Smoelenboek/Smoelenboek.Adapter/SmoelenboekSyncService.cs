@@ -18,7 +18,7 @@ public sealed class SmoelenboekSyncService(
     // customer-specific (e.g. restricting to a domain and requiring a department) and optional: Graph
     // treats an empty $filter as no filter at all, so leaving it unset fetches every user.
     private const string UsersSelect =
-        "displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
+        "id,displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -96,7 +96,7 @@ public sealed class SmoelenboekSyncService(
                 continue;
             }
 
-            var identificatie = user.UserPrincipalName;
+            var identificatie = user.Id;
             syncedMedewerkers.Add(identificatie);
 
             var phones = CollectPhones(user);
