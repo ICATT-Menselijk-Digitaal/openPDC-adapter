@@ -18,7 +18,7 @@ public sealed class SmoelenboekSyncService(
     // customer-specific (e.g. restricting to a domain and requiring a department) and optional: Graph
     // treats an empty $filter as no filter at all, so leaving it unset fetches every user.
     private const string UsersSelect =
-        "displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
+        "id,displayName,userPrincipalName,department,givenName,surname,mail,businessPhones,jobTitle,accountEnabled";
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -87,8 +87,16 @@ public sealed class SmoelenboekSyncService(
             {
                 continue;
             }
+            var afdelingen = BuildAfdelingRefs(user, afdelingenByNaam);
+            if (afdelingen.Count == 0)
+            {
+                logger.LogWarning(
+                    "User '{User}' has no matching afdeling; skipping. Department: '{Department}'.",
+                    user.UserPrincipalName, user.Department);
+                continue;
+            }
 
-            var identificatie = user.UserPrincipalName;
+            var identificatie = user.Id;
             syncedMedewerkers.Add(identificatie);
 
             var phones = CollectPhones(user);
@@ -96,15 +104,13 @@ public sealed class SmoelenboekSyncService(
                 ? (IReadOnlyList<EmailRef>)[new EmailRef { Email = user.Mail, Naam = user.DisplayName }]
                 : null;
 
-
-            var afdelingen = BuildAfdelingRefs(user, afdelingenByNaam);
             var skills = await FetchSkillsAsync(user.UserPrincipalName, ct);
 
             var data = new Medewerker
             {
                 Identificatie   = identificatie,
                 Voornaam        = isSharedMailbox ? user.DisplayName : user.GivenName,
-                Achternaam      = isSharedMailbox ? "Shared mailbox" : user.Surname,
+                Achternaam      = isSharedMailbox ? "(Shared mailbox)" : user.Surname,
                 VolledigeNaam   = user.DisplayName,
                 Telefoonnummers = phones.Count > 0 ? phones : null,
                 Emails          = emails,
@@ -119,22 +125,14 @@ public sealed class SmoelenboekSyncService(
         await DeleteOrphanMedewerkersAsync(syncedMedewerkers, existingMedewerkers, ct);
     }
 
-    private IReadOnlyList<AfdelingRef> BuildAfdelingRefs(EntraUser user, Dictionary<string, Afdeling> afdelingenByNaam)
+    private static IReadOnlyList<AfdelingRef> BuildAfdelingRefs(EntraUser user, Dictionary<string, Afdeling> afdelingenByNaam)
     {
-        if (user.Department is not { Length: > 0 } department)
-        {
-            return [];
-        }
-
-        if (afdelingenByNaam.TryGetValue(department, out var afdeling))
+        if (user.Department is { Length: > 0 } department && afdelingenByNaam.TryGetValue(department, out var afdeling))
         {
             return [new AfdelingRef { Afdelingnaam = department, AfdelingId = afdeling.Identificatie }];
         }
 
-        logger.LogWarning(
-            "No afdeling found in OpenObjects matching name '{Department}' for user '{User}'. Setting with only the name.",
-            department, user.UserPrincipalName);
-        return [new AfdelingRef { Afdelingnaam = department }];
+        return [];
     }
 
     private async Task<string?> FetchSkillsAsync(string userPrincipalName, CancellationToken ct)
