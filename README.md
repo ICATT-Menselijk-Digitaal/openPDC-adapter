@@ -1,5 +1,16 @@
 # openPDC-adapter
 
+> [!WARNING]
+> **This repository is no longer used or maintained.** The openPDC and Smoelenboek adapters have moved to [Rheden-Adapters](https://github.com/ICATT-Menselijk-Digitaal/Rheden-Adapters), together with the Rx.Enterprise adapter. Open new issues and pull requests there.
+>
+> | Adapter | New location |
+> | --- | --- |
+> | openPDC | [`openPDC/`](https://github.com/ICATT-Menselijk-Digitaal/Rheden-Adapters/tree/main/openPDC) |
+> | Smoelenboek | [`Smoelenboek/`](https://github.com/ICATT-Menselijk-Digitaal/Rheden-Adapters/tree/main/Smoelenboek) |
+>
+> The image and Helm chart addresses (`ghcr.io/icatt-menselijk-digitaal/openpdc-adapter`, `ghcr.io/icatt-menselijk-digitaal/smoelenboek-adapter` and the charts under `ghcr.io/icatt-menselijk-digitaal/charts/`) stay the same. Versions `1.7.0` and later are built from Rheden-Adapters; `1.6.0` was the last release from this repository.
+>
+
 This repository contains standalone adapters that sync external data sources into the Open Object register. They're developed for the municipality Rheden to make data directly available in [KISS](https://github.com/Klantinteractie-Servicesysteem), a Dutch local government open source project, as part of the [Association of Netherlands Municipalities](https://vng.nl/artikelen/about-the-vng) (VNG) [Common Ground framework](https://commonground.nl/).
 
 ## Adapters
